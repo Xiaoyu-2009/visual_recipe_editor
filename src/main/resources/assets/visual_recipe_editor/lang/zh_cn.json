@@ -1,0 +1,24 @@
+{
+  "gui.visual_recipe_editor.crafting.title": "工作台配方编写器",
+  "gui.visual_recipe_editor.furnace.title": "熔炉配方编写器",
+  "gui.visual_recipe_editor.blast_furnace.title": "高炉配方编写器",
+  "gui.visual_recipe_editor.smoker.title": "烟熏炉配方编写器",
+  "gui.visual_recipe_editor.stonecutter.title": "切石机配方编写器",
+  "gui.visual_recipe_editor.smithing.title": "锻造台配方编写器",
+  
+  "gui.visual_recipe_editor.button.json": "JSON",
+  "gui.visual_recipe_editor.button.kubejs": "KubeJS",
+  "gui.visual_recipe_editor.button.shapeless": "无序",
+  "gui.visual_recipe_editor.button.use_tags": "使用标签",
+  
+  "gui.visual_recipe_editor.tooltip.json": "左键导出到文件夹\nCtrl+左键复制到剪贴板",
+  "gui.visual_recipe_editor.tooltip.kubejs": "左键导出到KubeJS脚本\nCtrl+左键复制到剪贴板",
+  "gui.visual_recipe_editor.tooltip.cooking_time": "烧制时间(tick)，默认: %d",
+  "gui.visual_recipe_editor.tooltip.experience": "获得经验值，默认: %.1f",
+  
+  "gui.visual_recipe_editor.input.cooking_time": "烧制时间",
+  "gui.visual_recipe_editor.input.experience": "经验值",
+  
+  "command.visual_recipe_editor.unknown_workstation": "未知的工作方块类型: %s",
+  "command.visual_recipe_editor.available_types": "可用类型: crafting, furnace, blast_furnace, smoker, smithing, stonecutter"
+}

@@ -1,0 +1,24 @@
+{
+  "gui.visual_recipe_editor.crafting.title": "Crafting Recipe Editor",
+  "gui.visual_recipe_editor.furnace.title": "Furnace Recipe Editor",
+  "gui.visual_recipe_editor.blast_furnace.title": "Blast Furnace Recipe Editor",
+  "gui.visual_recipe_editor.smoker.title": "Smoker Recipe Editor",
+  "gui.visual_recipe_editor.stonecutter.title": "Stonecutter Recipe Editor",
+  "gui.visual_recipe_editor.smithing.title": "Smithing Table Recipe Editor",
+  
+  "gui.visual_recipe_editor.button.json": "JSON",
+  "gui.visual_recipe_editor.button.kubejs": "KubeJS",
+  "gui.visual_recipe_editor.button.shapeless": "Shapeless",
+  "gui.visual_recipe_editor.button.use_tags": "Use Tags",
+  
+  "gui.visual_recipe_editor.tooltip.json": "Left click to export to folder\nCtrl+Left click to copy to clipboard",
+  "gui.visual_recipe_editor.tooltip.kubejs": "Left click to export to KubeJS script\nCtrl+Left click to copy to clipboard",
+  "gui.visual_recipe_editor.tooltip.cooking_time": "Cooking time (ticks), default: %d",
+  "gui.visual_recipe_editor.tooltip.experience": "Experience gained, default: %.1f",
+  
+  "gui.visual_recipe_editor.input.cooking_time": "Cooking Time",
+  "gui.visual_recipe_editor.input.experience": "Experience",
+  
+  "command.visual_recipe_editor.unknown_workstation": "Unknown workstation type: %s",
+  "command.visual_recipe_editor.available_types": "Available types: crafting, furnace, blast_furnace, smoker, smithing, stonecutter"
+}
