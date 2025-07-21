@@ -3,6 +3,7 @@ package com.visual_recipe_editor.screen;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.visual_recipe_editor.menu.CraftingRecipeMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,6 +13,8 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -27,14 +30,26 @@ import java.util.List;
 import java.util.Map;
 
 public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipeMenu> {
-    private static final ResourceLocation CRAFTING_TABLE_LOCATION = new ResourceLocation("textures/gui/container/crafting_table.png");
+    private static final ResourceLocation CRAFTING_TABLE_LOCATION = new ResourceLocation(
+    "textures/gui/container/crafting_table.png");
+    private static final int CRAFTING_GRID_SIZE = 9;
+    private static final int GRID_WIDTH = 3;
+    private static final int GRID_HEIGHT = 3;
+    private static final int BUTTON_WIDTH = 40;
+    private static final int BUTTON_HEIGHT = 20;
+    private static final int BUTTON_SPACING = 4;
+    private static final int CHECKBOX_WIDTH = 50;
+    private static final int CHECKBOX_HEIGHT = 20;
+    private static final int INPUT_BOX_WIDTH = 48;
+    private static final int INPUT_BOX_HEIGHT = 16;
+
     private Button exportJsonButton;
     private Button exportKubeJSButton;
     private Checkbox shapelessCheckbox;
-    private Checkbox useTagsCheckbox;
-    private EditBox[] tagInputs;
+    private Checkbox useNbtCheckbox;
+
     private boolean isShapeless = false;
-    private boolean useTags = false;
+    private boolean useNbt = true;
 
     public CraftingRecipeScreen(CraftingRecipeMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -47,16 +62,14 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
     @Override
     protected void init() {
         super.init();
-        int buttonWidth = 40;
-        int spacing = 4;
         int startX = this.leftPos + 85;
+        int checkboxX = startX - 170;
 
         this.shapelessCheckbox = new Checkbox(
-                startX - 170, this.topPos + 30,
-                50, 20,
+                checkboxX, this.topPos + 30,
+                CHECKBOX_WIDTH, CHECKBOX_HEIGHT,
                 Component.translatable("gui.visual_recipe_editor.button.shapeless"),
-                this.isShapeless
-        ) {
+                this.isShapeless) {
             @Override
             public void onPress() {
                 super.onPress();
@@ -64,32 +77,22 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
             }
         };
 
-        this.useTagsCheckbox = new Checkbox(
-                startX - 170, this.topPos + 60,
-                50, 20,
-                Component.translatable("gui.visual_recipe_editor.button.use_tags"),
-                this.useTags
-        ) {
+        this.useNbtCheckbox = new Checkbox(
+                checkboxX, this.topPos + 60,
+                CHECKBOX_WIDTH, CHECKBOX_HEIGHT,
+                Component.translatable("gui.visual_recipe_editor.button.use_nbt"),
+                this.useNbt) {
             @Override
             public void onPress() {
                 super.onPress();
-                useTags = this.selected();
-                updateTagInputVisibility();
+                useNbt = this.selected();
             }
         };
 
-        this.tagInputs = new EditBox[9];
-        for (int i = 0; i < 9; i++) {
-            this.tagInputs[i] = new EditBox(this.font,
-                    this.leftPos + 8 + (i % 3) * 18,
-                    this.topPos + 17 + (i / 3) * 18,
-                    16, 16,
-                    Component.empty());
-            this.tagInputs[i].setVisible(false);
-        }
-
-        this.exportJsonButton = Button.builder(Component.translatable("gui.visual_recipe_editor.button.json"), button -> {
-                    if (!isRecipeValid()) return;
+        this.exportJsonButton = Button
+                .builder(Component.translatable("gui.visual_recipe_editor.button.json"), button -> {
+                    if (!isRecipeValid())
+                        return;
                     if (Screen.hasControlDown()) {
                         String json = isShapeless ? generateShapelessJson() : generateJson();
                         Minecraft.getInstance().keyboardHandler.setClipboard(json);
@@ -102,12 +105,14 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
                     }
                 })
                 .pos(startX, this.topPos + 58)
-                .size(buttonWidth, 20)
+                .size(BUTTON_WIDTH, BUTTON_HEIGHT)
                 .tooltip(Tooltip.create(Component.translatable("gui.visual_recipe_editor.tooltip.json")))
                 .build();
 
-        this.exportKubeJSButton = Button.builder(Component.translatable("gui.visual_recipe_editor.button.kubejs"), button -> {
-                    if (!isRecipeValid()) return;
+        this.exportKubeJSButton = Button
+                .builder(Component.translatable("gui.visual_recipe_editor.button.kubejs"), button -> {
+                    if (!isRecipeValid())
+                        return;
                     if (Screen.hasControlDown()) {
                         String kubeJs = isShapeless ? generateShapelessKubeJS() : generateKubeJS();
                         Minecraft.getInstance().keyboardHandler.setClipboard(kubeJs);
@@ -119,16 +124,13 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
                         }
                     }
                 })
-                .pos(startX + buttonWidth + spacing, this.topPos + 58)
-                .size(buttonWidth, 20)
+                .pos(startX + BUTTON_WIDTH + BUTTON_SPACING, this.topPos + 58)
+                .size(BUTTON_WIDTH, BUTTON_HEIGHT)
                 .tooltip(Tooltip.create(Component.translatable("gui.visual_recipe_editor.tooltip.kubejs")))
                 .build();
 
         this.addRenderableWidget(shapelessCheckbox);
-        this.addRenderableWidget(useTagsCheckbox);
-        for (EditBox tagInput : tagInputs) {
-            this.addRenderableWidget(tagInput);
-        }
+        this.addRenderableWidget(useNbtCheckbox);
         this.addRenderableWidget(exportJsonButton);
         this.addRenderableWidget(exportKubeJSButton);
         this.titleLabelX = 28;
@@ -139,18 +141,6 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
         this.renderBackground(graphics);
         super.render(graphics, mouseX, mouseY, partialTick);
         this.renderTooltip(graphics, mouseX, mouseY);
-        updateTagInputVisibility();
-    }
-
-    private void updateTagInputVisibility() {
-        for (int i = 0; i < 9; i++) {
-            int x = this.leftPos + 12 + (i % 3) * 50;
-            int y = this.topPos + 80 + (i / 3) * 20;
-            tagInputs[i].setX(x);
-            tagInputs[i].setY(y);
-            tagInputs[i].setWidth(48);
-            tagInputs[i].setVisible(useTags && !menu.getSlot(i + 1).getItem().isEmpty());
-        }
     }
 
     @Override
@@ -164,7 +154,7 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
         boolean hasItems = false;
         boolean hasResult = !this.menu.getSlot(0).getItem().isEmpty();
 
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i <= CRAFTING_GRID_SIZE; i++) {
             if (!this.menu.getSlot(i).getItem().isEmpty()) {
                 hasItems = true;
                 break;
@@ -172,20 +162,53 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
         }
 
         return hasItems && hasResult;
-    }   
- private JsonObject serializeItemOrTag(ItemStack stack, int slot) {
+    }
+
+    private boolean requiresNBT(ItemStack stack) {
+        if (stack.isEmpty())
+            return false;
+
+        ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        if (itemId == null)
+            return false;
+
+        String itemName = itemId.toString();
+
+        return itemName.equals("minecraft:enchanted_book") ||
+                itemName.equals("minecraft:potion") ||
+                itemName.equals("minecraft:splash_potion") ||
+                itemName.equals("minecraft:lingering_potion") ||
+                itemName.equals("minecraft:tipped_arrow") ||
+                itemName.contains("spawn_egg") ||
+                itemName.equals("minecraft:written_book") ||
+                itemName.equals("minecraft:player_head") ||
+                itemName.equals("minecraft:suspicious_stew");
+    }
+
+    private JsonObject serializeItem(ItemStack stack) {
         JsonObject item = new JsonObject();
-        if (useTags && !tagInputs[slot].getValue().isEmpty()) {
-            item.addProperty("tag", tagInputs[slot].getValue());
-        } else {
-            ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
-            if (itemId != null) {
-                item.addProperty("item", itemId.toString());
-            }
+
+        ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        if (itemId != null) {
+            item.addProperty("item", itemId.toString());
         }
+
         if (stack.getCount() > 1) {
             item.addProperty("count", stack.getCount());
         }
+
+        if ((useNbt || requiresNBT(stack)) && stack.hasTag()) {
+            CompoundTag nbt = stack.getTag();
+            if (nbt != null && !nbt.isEmpty()) {
+                try {
+                    JsonObject nbtJson = JsonParser.parseString(nbt.toString()).getAsJsonObject();
+                    item.add("nbt", nbtJson);
+                } catch (Exception ignored) {
+                    item.addProperty("nbt", nbt.toString());
+                }
+            }
+        }
+
         return item;
     }
 
@@ -196,6 +219,19 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
             result.addProperty("id", itemId.toString());
             result.addProperty("count", stack.getCount());
         }
+
+        if (useNbt && stack.hasTag()) {
+            CompoundTag nbt = stack.getTag();
+            if (nbt != null && !nbt.isEmpty()) {
+                try {
+                    JsonObject nbtJson = JsonParser.parseString(nbt.toString()).getAsJsonObject();
+                    result.add("nbt", nbtJson);
+                } catch (Exception ignored) {
+                    result.addProperty("nbt", nbt.toString());
+                }
+            }
+        }
+
         return result;
     }
 
@@ -203,7 +239,7 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
         List<ItemStack> inputs = new ArrayList<>();
         ItemStack output = this.menu.getSlot(0).getItem();
 
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i <= CRAFTING_GRID_SIZE; i++) {
             inputs.add(this.menu.getSlot(i).getItem());
         }
 
@@ -214,14 +250,14 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
         JsonObject key = new JsonObject();
         char currentKey = 'A';
 
-        for (int row = 0; row < 3; row++) {
+        for (int row = 0; row < GRID_HEIGHT; row++) {
             StringBuilder patternRow = new StringBuilder();
-            for (int col = 0; col < 3; col++) {
-                ItemStack stack = inputs.get(row * 3 + col);
+            for (int col = 0; col < GRID_WIDTH; col++) {
+                ItemStack stack = inputs.get(row * GRID_WIDTH + col);
                 if (!stack.isEmpty()) {
                     ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
                     if (itemId != null) {
-                        key.add(String.valueOf(currentKey), serializeItemOrTag(stack, row * 3 + col));
+                        key.add(String.valueOf(currentKey), serializeItem(stack));
                         patternRow.append(currentKey++);
                     }
                 } else {
@@ -242,7 +278,7 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
         List<ItemStack> inputs = new ArrayList<>();
         ItemStack output = this.menu.getSlot(0).getItem();
 
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i <= CRAFTING_GRID_SIZE; i++) {
             ItemStack stack = this.menu.getSlot(i).getItem();
             if (!stack.isEmpty()) {
                 inputs.add(stack);
@@ -254,7 +290,7 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
 
         JsonArray ingredients = new JsonArray();
         for (int i = 0; i < inputs.size(); i++) {
-            ingredients.add(serializeItemOrTag(inputs.get(i), i));
+            ingredients.add(serializeItem(inputs.get(i)));
         }
 
         json.add("ingredients", ingredients);
@@ -269,8 +305,7 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
             Files.createDirectories(recipesDir);
             Path recipePath = recipesDir.resolve("crafting_recipe_" + System.currentTimeMillis() + ".json");
             Files.writeString(recipePath, generateJson());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
@@ -280,45 +315,64 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
             Files.createDirectories(recipesDir);
             Path recipePath = recipesDir.resolve("shapeless_recipe_" + System.currentTimeMillis() + ".json");
             Files.writeString(recipePath, generateShapelessJson());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
-    }   
- private String generateKubeJS() {
+    }
+
+    private String generateKubeJS() {
         List<ItemStack> inputs = new ArrayList<>();
         ItemStack output = this.menu.getSlot(0).getItem();
 
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i <= CRAFTING_GRID_SIZE; i++) {
             inputs.add(this.menu.getSlot(i).getItem());
         }
 
         StringBuilder script = new StringBuilder();
         script.append("    event.shaped(\n");
-        
+
         ResourceLocation outputId = ForgeRegistries.ITEMS.getKey(output.getItem());
-        script.append("        Item.of('").append(outputId).append("'");
-        if (output.getCount() > 1) {
-            script.append(", ").append(output.getCount());
+        if ((useNbt || requiresNBT(output)) && output.hasTag()) {
+            CompoundTag nbt = output.getTag();
+            if (nbt != null && !nbt.isEmpty()) {
+                script.append("        Item.of('").append(outputId).append("', ");
+                if (output.getCount() > 1) {
+                    script.append(output.getCount()).append(", ");
+                }
+                script.append("'").append(nbt.toString()).append("'),\n");
+            } else {
+                script.append("        Item.of('").append(outputId).append("'");
+                if (output.getCount() > 1) {
+                    script.append(", ").append(output.getCount());
+                }
+                script.append("),\n");
+            }
+        } else {
+            script.append("        Item.of('").append(outputId).append("'");
+            if (output.getCount() > 1) {
+                script.append(", ").append(output.getCount());
+            }
+            script.append("),\n");
         }
-        script.append("),\n");
 
         script.append("        [\n");
 
         char currentKey = 'A';
         Map<String, Character> itemToKey = new HashMap<>();
 
-        for (int row = 0; row < 3; row++) {
+        for (int row = 0; row < GRID_HEIGHT; row++) {
             script.append("            '");
-            for (int col = 0; col < 3; col++) {
-                ItemStack stack = inputs.get(row * 3 + col);
+            for (int col = 0; col < GRID_WIDTH; col++) {
+                ItemStack stack = inputs.get(row * GRID_WIDTH + col);
                 if (!stack.isEmpty()) {
                     ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
                     if (itemId != null) {
                         String key;
-                        if (useTags && !tagInputs[row * 3 + col].getValue().isEmpty()) {
-                            key = "#" + tagInputs[row * 3 + col].getValue();
-                        } else {
-                            key = itemId.toString();
+                        key = itemId.toString();
+                        if ((useNbt || requiresNBT(stack)) && stack.hasTag()) {
+                            CompoundTag nbt = stack.getTag();
+                            if (nbt != null && !nbt.isEmpty()) {
+                                key += "|NBT:" + nbt.toString();
+                            }
                         }
                         if (!itemToKey.containsKey(key)) {
                             itemToKey.put(key, currentKey++);
@@ -331,15 +385,27 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
                     script.append(" ");
                 }
             }
-            script.append(row < 2 ? "',\n" : "'\n");
+            script.append(row < GRID_HEIGHT - 1 ? "',\n" : "'\n");
         }
         script.append("        ],\n");
 
         script.append("        {\n");
         boolean first = true;
         for (Map.Entry<String, Character> entry : itemToKey.entrySet()) {
-            if (!first) script.append(",\n");
-            script.append("            ").append(entry.getValue()).append(": '").append(entry.getKey()).append("'");
+            if (!first)
+                script.append(",\n");
+            String[] keyParts = entry.getKey().split("\\|");
+            String itemKey = keyParts[0];
+            script.append("            ").append(entry.getValue()).append(": ");
+
+            if (keyParts.length > 1 && keyParts[1].startsWith("NBT:")) {
+                script.append("Item.of('").append(itemKey).append("', '").append(keyParts[1].substring(4))
+                        .append("').strongNBT()");
+            } else if (useNbt) {
+                script.append("Item.of('").append(itemKey).append("', '{}')");
+            } else {
+                script.append("'").append(itemKey).append("'");
+            }
             first = false;
         }
         script.append("\n        }\n    )");
@@ -351,7 +417,7 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
         List<ItemStack> inputs = new ArrayList<>();
         ItemStack output = this.menu.getSlot(0).getItem();
 
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i <= CRAFTING_GRID_SIZE; i++) {
             ItemStack stack = this.menu.getSlot(i).getItem();
             if (!stack.isEmpty()) {
                 inputs.add(stack);
@@ -360,25 +426,53 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
 
         StringBuilder script = new StringBuilder();
         script.append("    event.shapeless(\n");
-        
+
         ResourceLocation outputId = ForgeRegistries.ITEMS.getKey(output.getItem());
-        script.append("        Item.of('").append(outputId).append("'");
-        if (output.getCount() > 1) {
-            script.append(", ").append(output.getCount());
+        if ((useNbt || requiresNBT(output)) && output.hasTag()) {
+            CompoundTag nbt = output.getTag();
+            if (nbt != null && !nbt.isEmpty()) {
+                script.append("        Item.of('").append(outputId).append("', ");
+                if (output.getCount() > 1) {
+                    script.append(output.getCount()).append(", ");
+                }
+                script.append("'").append(nbt.toString()).append("'),\n");
+            } else {
+                script.append("        Item.of('").append(outputId).append("'");
+                if (output.getCount() > 1) {
+                    script.append(", ").append(output.getCount());
+                }
+                script.append("),\n");
+            }
+        } else {
+            script.append("        Item.of('").append(outputId).append("'");
+            if (output.getCount() > 1) {
+                script.append(", ").append(output.getCount());
+            }
+            script.append("),\n");
         }
-        script.append("),\n");
 
         script.append("        [\n");
 
         for (int i = 0; i < inputs.size(); i++) {
             ItemStack input = inputs.get(i);
             script.append("            ");
-            if (useTags && !tagInputs[i].getValue().isEmpty()) {
-                script.append("'#").append(tagInputs[i].getValue()).append("'");
+
+            ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(input.getItem());
+
+            if ((useNbt || requiresNBT(input)) && input.hasTag()) {
+                CompoundTag nbt = input.getTag();
+                if (nbt != null && !nbt.isEmpty()) {
+                    script.append("Item.of('").append(itemId).append("', '").append(nbt.toString())
+                            .append("').strongNBT()");
+                } else {
+                    script.append("Item.of('").append(itemId).append("', '{}')");
+                }
+            } else if (useNbt) {
+                script.append("Item.of('").append(itemId).append("', '{}')");
             } else {
-                ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(input.getItem());
                 script.append("'").append(itemId).append("'");
             }
+
             if (i < inputs.size() - 1) {
                 script.append(",");
             }
@@ -411,8 +505,7 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
                 String updatedContent = existingContent.replace("});", newRecipe + "\n});");
                 Files.writeString(recipePath, updatedContent);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
@@ -438,41 +531,11 @@ public class CraftingRecipeScreen extends AbstractContainerScreen<CraftingRecipe
                 Files.writeString(recipePath, updatedContent);
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     @Override
     public boolean isPauseScreen() {
         return false;
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        boolean anyFocused = false;
-        for (EditBox tagInput : tagInputs) {
-            if (tagInput.isFocused()) {
-                anyFocused = true;
-                break;
-            }
-        }
-
-        if (anyFocused) {
-            if (getFocused() instanceof EditBox editBox) {
-                editBox.keyPressed(keyCode, scanCode, modifiers);
-                return true;
-            }
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        for (EditBox tagInput : tagInputs) {
-            if (!tagInput.isMouseOver(mouseX, mouseY) && tagInput.isFocused()) {
-                tagInput.setFocused(false);
-            }
-        }
-        return super.mouseClicked(mouseX, mouseY, button);
     }
 }

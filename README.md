@@ -1,6 +1,6 @@
 # 可视化配方编写 (Workstation Recipe Exporter)
 
-## 导出格式
+## 生成格式
 - **JSON格式** - Minecraft原版的数据包配方格式
 - **KubeJS格式** - KubeJS模组的JS配方格式
 
@@ -18,7 +18,7 @@
 - smithing - 锻造台
 ```
 
-## 导出位置
+## 生成位置
 
 ### JSON配方文件
 - 路径：`<游戏目录>/exported_recipes/`

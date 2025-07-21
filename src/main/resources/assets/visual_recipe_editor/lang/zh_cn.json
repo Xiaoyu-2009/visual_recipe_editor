@@ -10,11 +10,14 @@
   "gui.visual_recipe_editor.button.kubejs": "KubeJS",
   "gui.visual_recipe_editor.button.shapeless": "无序",
   "gui.visual_recipe_editor.button.use_tags": "使用标签",
+  "gui.visual_recipe_editor.button.use_nbt": "使用NBT",
   
   "gui.visual_recipe_editor.tooltip.json": "左键导出到文件夹\nCtrl+左键复制到剪贴板",
   "gui.visual_recipe_editor.tooltip.kubejs": "左键导出到KubeJS脚本\nCtrl+左键复制到剪贴板",
-  "gui.visual_recipe_editor.tooltip.cooking_time": "烧制时间(tick)，默认: %d",
-  "gui.visual_recipe_editor.tooltip.experience": "获得经验值，默认: %.1f",
+  "gui.visual_recipe_editor.tooltip.nbt_input": "NBT数据 (JSON格式)",
+  "gui.visual_recipe_editor.tooltip.result_nbt": "结果物品NBT数据 (JSON格式)",
+  "gui.visual_recipe_editor.tooltip.cooking_time": "烧制时间(tick)，默认: %s",
+  "gui.visual_recipe_editor.tooltip.experience": "获得经验值，默认: %s",
   
   "gui.visual_recipe_editor.input.cooking_time": "烧制时间",
   "gui.visual_recipe_editor.input.experience": "经验值",

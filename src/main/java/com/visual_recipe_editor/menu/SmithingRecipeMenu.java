@@ -69,12 +69,12 @@ public class SmithingRecipeMenu extends AbstractContainerMenu {
                 }
             } else if (index >= 4 && index < 31) { // 主背包
                 if (!this.moveItemStackTo(slotStack, 31, 40, false) &&
-                        !this.moveItemStackTo(slotStack, 0, 3, false)) {
+                    !this.moveItemStackTo(slotStack, 0, 3, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (index >= 31 && index < 40) { // 快捷栏
                 if (!this.moveItemStackTo(slotStack, 4, 31, false) &&
-                        !this.moveItemStackTo(slotStack, 0, 3, false)) {
+                    !this.moveItemStackTo(slotStack, 0, 3, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (!this.moveItemStackTo(slotStack, 4, 40, false)) {

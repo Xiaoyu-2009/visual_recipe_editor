@@ -66,12 +66,12 @@ public abstract class BaseSmeltingMenu extends AbstractContainerMenu {
             } else if (index != 0) { // 不是输入槽位
                 if (index >= 2 && index < 29) { // 主背包
                     if (!this.moveItemStackTo(slotStack, 29, 38, false) &&
-                            !this.moveItemStackTo(slotStack, 0, 1, false)) {
+                        !this.moveItemStackTo(slotStack, 0, 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (index >= 29 && index < 38) { // 快捷栏
                     if (!this.moveItemStackTo(slotStack, 2, 29, false) &&
-                            !this.moveItemStackTo(slotStack, 0, 1, false)) {
+                        !this.moveItemStackTo(slotStack, 0, 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 }

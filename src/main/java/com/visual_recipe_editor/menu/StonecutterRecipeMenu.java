@@ -59,23 +59,23 @@ public class StonecutterRecipeMenu extends AbstractContainerMenu {
             ItemStack slotStack = slot.getItem();
             itemstack = slotStack.copy();
 
-            if (index == 1) { // 输出槽位
+            if (index == 1) {
                 if (!this.moveItemStackTo(slotStack, 2, 38, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (index != 0) { // 不是输入槽位
-                if (index >= 2 && index < 29) { // 主背包
+            } else if (index != 0) {
+                if (index >= 2 && index < 29) {
                     if (!this.moveItemStackTo(slotStack, 29, 38, false) &&
-                            !this.moveItemStackTo(slotStack, 0, 1, false)) {
+                        !this.moveItemStackTo(slotStack, 0, 1, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (index >= 29 && index < 38) { // 快捷栏
+                } else if (index >= 29 && index < 38) {
                     if (!this.moveItemStackTo(slotStack, 2, 29, false) &&
-                            !this.moveItemStackTo(slotStack, 0, 1, false)) {
+                        !this.moveItemStackTo(slotStack, 0, 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
-            } else if (!this.moveItemStackTo(slotStack, 2, 38, false)) { // 输入槽位
+            } else if (!this.moveItemStackTo(slotStack, 2, 38, false)) {
                 return ItemStack.EMPTY;
             }
 

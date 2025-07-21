@@ -74,12 +74,12 @@ public class CraftingRecipeMenu extends RecipeBookMenu<CraftingContainer> {
                 }
             } else if (index >= 10 && index < 37) {
                 if (!this.moveItemStackTo(slotStack, 37, 46, false) &&
-                        !this.moveItemStackTo(slotStack, 1, 10, false)) {
+                    !this.moveItemStackTo(slotStack, 1, 10, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (index >= 37 && index < 46) {
                 if (!this.moveItemStackTo(slotStack, 10, 37, false) &&
-                        !this.moveItemStackTo(slotStack, 1, 10, false)) {
+                    !this.moveItemStackTo(slotStack, 1, 10, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (!this.moveItemStackTo(slotStack, 10, 46, false)) {
