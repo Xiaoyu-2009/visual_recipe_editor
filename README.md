@@ -27,3 +27,29 @@
 ### KubeJS脚本文件
 - 路径：`<游戏目录>/kubejs/server_scripts/`
 - 文件名：`exported_recipes.js`
+
+# Visual Recipe Writer (Workstation Recipe Exporter)
+
+## Output Formats
+- **JSON Format** - Minecraft's original data pack recipe format
+- **KubeJS Format** - KubeJS mod's JavaScript recipe format
+
+## Usage Examples/re <workstation_type>
+/recipeexporter <workstation_type>
+/recipeexporter <use the corresponding block ID below to open different interfaces> [Example: /recipeexporter furnace]
+- crafting - Crafting Table
+- furnace - Furnace
+- blast_furnace - Blast Furnace
+- smoker - Smoker
+- campfire - Campfire [not yet added]
+- stonecutter - Stonecutter
+- smithing - Smithing Table
+## Output Locations
+
+### JSON Recipe Files
+- Path: `<game directory>/exported_recipes/`
+- Filename format: `<recipe_type>_<timestamp>.json`
+
+### KubeJS Script Files
+- Path: `<game directory>/kubejs/server_scripts/`
+- Filename: `exported_recipes.js`
