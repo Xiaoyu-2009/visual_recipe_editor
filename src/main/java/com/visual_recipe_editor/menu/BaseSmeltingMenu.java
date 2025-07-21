@@ -18,24 +18,24 @@ public abstract class BaseSmeltingMenu extends AbstractContainerMenu {
         this.player = player;
 
         // 输入槽位
-        this.addSlot(new Slot(this.container, 0, 56, 35));
+        this.addSlot(new Slot(this.container, 0, 56, 17));
         // 输出槽位
         this.addSlot(new Slot(this.container, 1, 116, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return true;
+                return true; // 配方编辑器允许在输出槽放置物品
             }
         });
 
         // 玩家背包
-        for(int k = 0; k < 3; k++) {
-            for(int i1 = 0; i1 < 9; i1++) {
+        for (int k = 0; k < 3; k++) {
+            for (int i1 = 0; i1 < 9; i1++) {
                 this.addSlot(new Slot(player.getInventory(), i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
             }
         }
 
         // 玩家快捷栏
-        for(int l = 0; l < 9; l++) {
+        for (int l = 0; l < 9; l++) {
             this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, 142));
         }
     }
