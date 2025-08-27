@@ -14,16 +14,12 @@ public class SmithingRecipeMenu extends AbstractContainerMenu {
 
     public SmithingRecipeMenu(int id, Player player) {
         super(RecipeMenuTypes.SMITHING_TYPE.get(), id);
-        this.container = new SimpleContainer(4); // 模板、基础、材料、结果
+        this.container = new SimpleContainer(4);
         this.player = player;
 
-        // 模板槽位
         this.addSlot(new Slot(this.container, 0, 8, 48));
-        // 基础物品槽位
         this.addSlot(new Slot(this.container, 1, 26, 48));
-        // 材料槽位
         this.addSlot(new Slot(this.container, 2, 44, 48));
-        // 结果槽位
         this.addSlot(new Slot(this.container, 3, 98, 48) {
             @Override
             public boolean mayPlace(ItemStack stack) {
@@ -31,14 +27,12 @@ public class SmithingRecipeMenu extends AbstractContainerMenu {
             }
         });
 
-        // 玩家背包
         for(int k = 0; k < 3; k++) {
             for(int i1 = 0; i1 < 9; i1++) {
                 this.addSlot(new Slot(player.getInventory(), i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
             }
         }
 
-        // 玩家快捷栏
         for(int l = 0; l < 9; l++) {
             this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, 142));
         }
@@ -63,16 +57,16 @@ public class SmithingRecipeMenu extends AbstractContainerMenu {
             ItemStack slotStack = slot.getItem();
             itemstack = slotStack.copy();
 
-            if (index == 3) { // 结果槽位
+            if (index == 3) {
                 if (!this.moveItemStackTo(slotStack, 4, 40, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (index >= 4 && index < 31) { // 主背包
+            } else if (index >= 4 && index < 31) {
                 if (!this.moveItemStackTo(slotStack, 31, 40, false) &&
                     !this.moveItemStackTo(slotStack, 0, 3, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (index >= 31 && index < 40) { // 快捷栏
+            } else if (index >= 31 && index < 40) {
                 if (!this.moveItemStackTo(slotStack, 4, 31, false) &&
                     !this.moveItemStackTo(slotStack, 0, 3, false)) {
                     return ItemStack.EMPTY;

@@ -4,7 +4,7 @@ license="All rights reserved"
 
 [[mods]]
 modId="visual_recipe_editor"
-version="1.0.0"
+version="1.1.0"
 displayName="可视化配方编写"
 # logoFile="pack.png"
 authors="Xiaoyu_2009"

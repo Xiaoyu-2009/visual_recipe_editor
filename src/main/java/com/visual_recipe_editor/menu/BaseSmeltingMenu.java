@@ -17,24 +17,20 @@ public abstract class BaseSmeltingMenu extends AbstractContainerMenu {
         this.container = new SimpleContainer(2);
         this.player = player;
 
-        // 输入槽位
         this.addSlot(new Slot(this.container, 0, 56, 17));
-        // 输出槽位
         this.addSlot(new Slot(this.container, 1, 116, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return true; // 配方编辑器允许在输出槽放置物品
+                return true;
             }
         });
 
-        // 玩家背包
         for (int k = 0; k < 3; k++) {
             for (int i1 = 0; i1 < 9; i1++) {
                 this.addSlot(new Slot(player.getInventory(), i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
             }
         }
 
-        // 玩家快捷栏
         for (int l = 0; l < 9; l++) {
             this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, 142));
         }
@@ -59,23 +55,23 @@ public abstract class BaseSmeltingMenu extends AbstractContainerMenu {
             ItemStack slotStack = slot.getItem();
             itemstack = slotStack.copy();
 
-            if (index == 1) { // 输出槽位
+            if (index == 1) {
                 if (!this.moveItemStackTo(slotStack, 2, 38, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (index != 0) { // 不是输入槽位
-                if (index >= 2 && index < 29) { // 主背包
+            } else if (index != 0) {
+                if (index >= 2 && index < 29) {
                     if (!this.moveItemStackTo(slotStack, 29, 38, false) &&
                         !this.moveItemStackTo(slotStack, 0, 1, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (index >= 29 && index < 38) { // 快捷栏
+                } else if (index >= 29 && index < 38) {
                     if (!this.moveItemStackTo(slotStack, 2, 29, false) &&
                         !this.moveItemStackTo(slotStack, 0, 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
-            } else if (!this.moveItemStackTo(slotStack, 2, 38, false)) { // 输入槽位
+            } else if (!this.moveItemStackTo(slotStack, 2, 38, false)) {
                 return ItemStack.EMPTY;
             }
 

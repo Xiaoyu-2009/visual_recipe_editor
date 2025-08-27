@@ -1,8 +1,12 @@
 package com.visual_recipe_editor.screen;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.visual_recipe_editor.menu.BaseSmeltingMenu;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -16,9 +20,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public abstract class BaseSmeltingScreen<T extends BaseSmeltingMenu> extends AbstractContainerScreen<T> {
     private static final ResourceLocation FURNACE_LOCATION = new ResourceLocation("textures/gui/container/furnace.png");
@@ -180,34 +181,37 @@ public abstract class BaseSmeltingScreen<T extends BaseSmeltingMenu> extends Abs
         ResourceLocation inputId = ForgeRegistries.ITEMS.getKey(input.getItem());
         script.append("        '").append(inputId).append("'");
 
-        boolean hasCustomProps = false;
+        boolean needsCookingTime = false;
+        boolean needsExperience = false;
+        int cookingTime = defaultCookingTime;
+        float experience = defaultExperience;
+        
         try {
-            int cookingTime = Integer.parseInt(cookingTimeInput.getValue());
-            if (cookingTime != defaultCookingTime) {
-                if (!hasCustomProps) {
-                    script.append(",\n        {\n");
-                    hasCustomProps = true;
-                } else {
-                    script.append(",\n");
-                }
-                script.append("            cookingTime: ").append(cookingTime);
-            }
+            cookingTime = Integer.parseInt(cookingTimeInput.getValue());
+            needsCookingTime = (cookingTime != defaultCookingTime);
         } catch (NumberFormatException ignored) {}
 
         try {
-            float experience = Float.parseFloat(experienceInput.getValue());
-            if (experience != defaultExperience) {
-                if (!hasCustomProps) {
-                    script.append(",\n        {\n");
-                    hasCustomProps = true;
-                } else {
+            experience = Float.parseFloat(experienceInput.getValue());
+            needsExperience = (experience != defaultExperience);
+        } catch (NumberFormatException ignored) {}
+
+        if (needsCookingTime || needsExperience) {
+            script.append(",\n        {\n");
+            
+            boolean firstProperty = true;
+            if (needsCookingTime) {
+                script.append("            cookingTime: ").append(cookingTime);
+                firstProperty = false;
+            }
+            
+            if (needsExperience) {
+                if (!firstProperty) {
                     script.append(",\n");
                 }
                 script.append("            experience: ").append(experience);
             }
-        } catch (NumberFormatException ignored) {}
-
-        if (hasCustomProps) {
+            
             script.append("\n        }");
         }
         

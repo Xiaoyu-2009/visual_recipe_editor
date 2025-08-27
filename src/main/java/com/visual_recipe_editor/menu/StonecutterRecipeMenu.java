@@ -16,10 +16,7 @@ public class StonecutterRecipeMenu extends AbstractContainerMenu {
         super(RecipeMenuTypes.STONECUTTER_TYPE.get(), id);
         this.container = new SimpleContainer(2);
         this.player = player;
-
-        // 输入槽位
         this.addSlot(new Slot(this.container, 0, 20, 33));
-        // 输出槽位
         this.addSlot(new Slot(this.container, 1, 143, 33) {
             @Override
             public boolean mayPlace(ItemStack stack) {
@@ -27,14 +24,12 @@ public class StonecutterRecipeMenu extends AbstractContainerMenu {
             }
         });
 
-        // 玩家背包
         for(int k = 0; k < 3; k++) {
             for(int i1 = 0; i1 < 9; i1++) {
                 this.addSlot(new Slot(player.getInventory(), i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
             }
         }
 
-        // 玩家快捷栏
         for(int l = 0; l < 9; l++) {
             this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, 142));
         }
